@@ -4,64 +4,77 @@ shinyUI(fluidPage(
     sidebarPanel(
         selectInput("method",
                     label="Test Procedure",
-                    choices=c("limma"="l","edgeR"="e","custom"="c"),
+                    choices=c("limma"="limma","edgeR"="edgeR"),
                     selected="e"),
+        selectInput("sort",
+                    label="Which genes to show:",
+                    choices=c("top"="top","custom"="custom"),
+                    selected="top"),
+        selectInput("comparison",
+                    label="Which comparison",
+                    choices=c("global"="global","timepoint"="contrast"),
+                    selected="global"),
         conditionalPanel(
-            condition="input.method != 'c'",
-            selectInput("contrast",
-                        label="Comparison",
-                        choices=c("global"="global","timepoint"="time","maxT"="maxT"),
-                        selected="global")
-            ),
-        conditionalPanel(
-            condition="input.contrast == 'time'",
-            sliderInput("timepoint",
+            condition="input.comparison == 'contrast'",
+            sliderInput("contrast",
                         label="Timepoint for comparison",
                         min=24,max=96,step=24,value=48)),
         conditionalPanel(
-            condition="input.method == 'c' || input.selectGenes == 'custom'",
-            HTML("Enter NM Identifiers separated by ', ':<br/><textarea id='custom' rows=10 cols=40>NM_027498, NM_144885, NM_019979, NM_138314, NM_021468, NM_178589, NM_011766, NM_010846, NM_001164793, NM_001164155, NM_029645, NM_001109914, NM_175686, NM_001044384, NM_023503, NM_001146690, NM_001030307, NM_023449, NM_001285812, NM_145472, NM_001177856, NM_172122, NM_019406, NM_024434, NM_001276482, NM_001102410, NM_001081164, NM_016957, NM_026029, NM_176838</textarea><br/>"))
+            condition="input.sort == 'custom' || input.gsort == 'custom'",
+            HTML("Enter NM Identifiers separated by ', ':<br/><textarea id='custom' rows=10 cols=40>NM_026377, NM_001003719, NM_026454, locus.2725.3, NM_001040072, NM_007953, locus.1073.29, NM_146224, locus.5293.7, locus.1785.79, NM_001281829, NM_172310, locus.3971.1, NM_023363, locus.317.243, locus.6277.8, locus.10411.34, NM_001271500, locus.3938.3, NM_001167905</textarea><br/>"))
     ),
     mainPanel(
         tabsetPanel(
             tabPanel(title="Heatmap",
                      conditionalPanel(
-                         condition="input.method != 'c'",
+                         condition="input.sort == 'top'",
                          sliderInput("toptags",
                                      label="Number of top tags to show",
                                      min=10,max=500,step=10,value=100)
-                     )), #plotOutput("heatmap")),
+                     ),
+                     plotOutput("heatmap",height='1080px')),
             tabPanel("Correlation",
                      fluidRow(
                          column(4,
-                                selectInput("selectGenes",
+                                selectInput("gsort",
                                             label="Select genes to correlate",
                                             choices=c("top","all","custom"),
                                             selected="top"),
                                 conditionalPanel(
-                                    condition="input.selectGenes == 'top'",
-                                    sliderInput("toptags",
+                                    condition="input.gsort == 'top'",
+                                    sliderInput("ngenes",
                                                 label="Number of top tags to show",
-                                                min=10,max=500,step=10,value=100))),
+                                                min=10,max=1000,step=10,value=100)),
+                                textOutput("corsize")),
                          column(4,
-                                selectInput("selectLoci",
+                                selectInput("lsort",
                                             label="Select loci to correlate",
                                             choices=c("top","all"),
                                             selected="top"),
                                 conditionalPanel(
-                                    condition="input.selectLoci == 'top'",
-                                    sliderInput("toptags",
+                                    condition="input.lsort == 'top'",
+                                    sliderInput("nloci",
                                                 label="Number of top tags to show",
-                                                min=10,max=500,step=10,value=100)))
-                     )
-                     ), #plotOutput("corgraph")),
+                                                min=10,max=1000,step=10,value=100)),
+                                actionButton("compute","Apply and recompute correlation matrix")),
+                         column(4,
+                                sliderInput("cutoff",
+                                            label="Cutoff above which an edge is drawn",
+                                            min=0,
+                                            max=1,
+                                            value=0.7,step=0.01),
+                                textOutput("graphsize"),
+                                actionButton("plot","Apply cutoff and plot graph"))
+                     ),
+                     plotOutput("graph",height="1080px")),
             tabPanel("Table",
                      conditionalPanel(
                          condition="input.method != 'c'",
-                         sliderInput("toptags",
+                         sliderInput("tabtags",
                                      label="Number of top tags to show",
                                      min=100,max=1500,step=200,value=100)
-                     ) ##tableOutput("table"))
+                     ),
+                     tableOutput("table")
                      )
         )
     )

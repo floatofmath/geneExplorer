@@ -17,9 +17,9 @@ colnames(MM)[1] <- "Intercept"
 C <- as.list(with(targets,unique(paste(Group[Treatment=='phx'],Group[Treatment=="ehx"],sep="-"))))
 C$levels <- MM
 
-m <- lmFit(dge.voom,MM)
-em <- eBayes(m)#,trend=T)
-resids <- residuals(em,dge.voom)
+## m <- lmFit(dge.voom,MM)
+## em <- eBayes(m)#,trend=T)
+## resids <- residuals(em,dge.voom)
 annotation <- annotation[!duplicated(NAMES),]
 
 contrasts <- function(comparison,labels=c("global"=0,"24" = 1,"32"=2,"48" = 3,"72" = 4,"96" = 5)){

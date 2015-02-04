@@ -1,7 +1,8 @@
 shinyServer(function(input,output){
     fitted <- reactive({
         time <- ifelse(input$comparison=="global","global",input$contrast)
-        fit(input$method,time)
+        ## this is governed by a UI in other apps
+        fit("edgeR",time)
     })
     parcor <- reactive({
         input$compute

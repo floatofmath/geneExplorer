@@ -1,3 +1,11 @@
+method_changer <- function(...){
+    selectInput("method",
+                label="Test Procedure",
+                choices=c("limma"="limma","edgeR"="edgeR"),
+                selected="edgeR")
+}
+
+
 heatmap_output <- function(...){
     tabPanel(title="Heatmap",
                     conditionalPanel(

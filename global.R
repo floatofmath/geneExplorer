@@ -37,17 +37,19 @@ fit <- function(method,contrast){
 
     return(fit)
 }
-
 TEtopTags.limma.global <- function(fit,n,pattern){
     if(!is.null(pattern)) fit <- fit[grepl(pattern,rownames(fit)),]
+    if(is.infinite(n)){ n <- nrow(fit) }
     rownames(fit)[order(fit$F.p.value)][1:n]
 }
 TEtopTags.limma.contrast <- function(fit,n,pattern){
     if(!is.null(pattern)) fit <- fit[grepl(pattern,rownames(fit)),]
+    if(is.infinite(n)){ n <- nrow(fit) }
     rownames(fit)[order(fit$p.value)][1:n]
 }
 TEtopTags.edgeR <- function(comparison,fit,n,pattern){
     if(!is.null(pattern)) fit <- fit[grepl(pattern,rownames(fit)),]
+    if(is.infinite(n)){ n <- nrow(fit) }
     rownames(fit)[order(fit$table$PValue)][1:n]
 }
 TEtopTags.limma <- function(comparison,fit,n,pattern){
@@ -85,6 +87,9 @@ TEtopStats.limma <- function(comparison,fit,toptags){
 TEtopStats <- function(method,comparison,fit,toptags){
     if(is.numeric(toptags) && length(toptags) == 1){
         toptags <- TEtopTags(method,comparison,fit,toptags)
+    } else if(!all(intags <- toptags %in% rownames(fit))){
+        toptags <- toptags[intags]
+        warning(paste("Not all tags in data:",toptags[!intags],collapse=", "))
     }
     switch(method,
            "limma"=TEtopStats.limma,
@@ -175,7 +180,9 @@ TEparcor <- function(fit,comparison,gsort,lsort,ngenes=NULL,nloci=NULL,genes=NUL
         gsort <- "top"
     }
     if(gsort == "custom") {
-        genes <- genes
+        ingenes <- genes %in% rownames(fit)
+        genes <- genes[ingenes]
+        warning(paste("Not all tags in data:",genes[!ingenes],collapse=", "))
     } else {
         genes <- TEtopTags(method,comparison,fit,ngenes,pattern="^NM")
     }

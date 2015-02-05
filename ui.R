@@ -68,13 +68,14 @@ shinyUI(fluidPage(
                      ),
                      plotOutput("graph",height="1080px")),
             tabPanel("Table",
-                     conditionalPanel(
-                         condition="input.method != 'c'",
-                         sliderInput("tabtags",
-                                     label="Number of top tags to show",
-                                     min=100,max=1500,step=200,value=100)
-                     ),
-                     tableOutput("table")
+                     fluidRow(uiOutput("button")),
+                     ## conditionalPanel(
+                     ##     condition="input.method != 'c'",
+                     ##     sliderInput("tabtags",
+                     ##                 label="Number of top tags to show",
+                     ##                 min=100,max=1500,step=200,value=100)
+                     ## ),
+                     dataTableOutput("table")
                      )
         )
     )

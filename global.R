@@ -4,12 +4,10 @@ library(edgeR)
 library(WGCNA)
 library(reshape2)
 library(igraph)
-#library(DT)
 load('design.rda')
 load('targets.Rd')
 load('normalized.Rd')
 load('annotation.Rd')
-source('elements.R')
 
 MM <- model.matrix(~Group, data=targets)
 colnames(MM) <- sub("Group","",colnames(MM))
@@ -22,8 +20,9 @@ em <- eBayes(m)#,trend=T)
 resids <- residuals(em,dge.voom)
 annotation <- annotation[!duplicated(NAMES),]
 
-contrasts <- function(comparison,labels=c("global"=0,"24" = 1,"32"=2,"48" = 3,"72" = 4,"96" = 5)){
-    contrast <- labels[as.character(comparison)]
+contrasts <- function(contrast){
+    comparison <- as.character(contrast)
+    contrast <- c("global"=0,"24" = 1,"32"=2,"48" = 3,"72" = 4,"96" = 5)[comparison]
     if(contrast==0){
         return(do.call(makeContrasts,C))
     } else {
@@ -41,17 +40,14 @@ fit <- function(method,contrast){
 
 TEtopTags.limma.global <- function(fit,n,pattern){
     if(!is.null(pattern)) fit <- fit[grepl(pattern,rownames(fit)),]
-    if(is.infinite(n)){ n <- nrow(fit) }
     rownames(fit)[order(fit$F.p.value)][1:n]
 }
 TEtopTags.limma.contrast <- function(fit,n,pattern){
     if(!is.null(pattern)) fit <- fit[grepl(pattern,rownames(fit)),]
-    if(is.infinite(n)){ n <- nrow(fit) }
     rownames(fit)[order(fit$p.value)][1:n]
 }
 TEtopTags.edgeR <- function(comparison,fit,n,pattern){
     if(!is.null(pattern)) fit <- fit[grepl(pattern,rownames(fit)),]
-    if(is.infinite(n)){ n <- nrow(fit) }
     rownames(fit)[order(fit$table$PValue)][1:n]
 }
 TEtopTags.limma <- function(comparison,fit,n,pattern){

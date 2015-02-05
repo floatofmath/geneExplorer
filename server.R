@@ -14,12 +14,12 @@ shinyServer(function(input,output){
     output$heatmap <- renderPlot({
         heatmap(isolate(fitted()),input$comparison,input$sort,input$toptags,strsplit(input$custom,',[[:blank:]]*')[[1]])
     })
-    output$table <- renderDataTable({
-        tt <- TEtable(isolate(fitted()),input$comparison,input$sort,Inf,strsplit(input$custom,',[[:blank:]]*')[[1]])
+    output$table <- renderTable({
+        tt <- TEtable(isolate(fitted()),input$comparison,input$sort,input$tabtags,strsplit(input$custom,',[[:blank:]]*')[[1]])
         locus <- tt[,paste0(Chromosome,":",start,"-",end)]
         tt[,NAMES:=makeUCSClink(locus,link=NAMES,project="&hgsid=202053665_L5FcliC2ZMly7BZLX6qdayCblg1D")]
         tt
-    },escape=F)
+    },sanitize.text.function = function(x) x)
     output$graph <- renderPlot({
         input$plot
         isolate(TEplotGraph(corgraph()))

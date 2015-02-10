@@ -60,6 +60,7 @@ gene_table <- function(...){
                      ##                 label="Number of top tags to show",
                      ##                 min=100,max=1500,step=200,value=100)
                      ## ),
-                     dataTableOutput("table")
-                     )
+             fluidRow(uiOutput("button")),
+             dataTableOutput("table")
+             )
 }

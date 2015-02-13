@@ -15,7 +15,7 @@ shinyServer(function(input,output){
     ##     g <- makeGraph(parcor(),input$cutoff)
     ## })
     output$heatmap <- renderPlot({
-        input$compute
+        input$redraw
         heatmap(isolate(fitted()),input$comparison,input$sort,input$toptags,strsplit(input$custom,',[[:blank:]]*')[[1]])
     })
     output$table <- renderDataTable({

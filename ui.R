@@ -25,7 +25,8 @@ shinyUI(fluidPage(
         ),
         conditionalPanel(
             condition="input.sort == 'custom' || input.gsort == 'custom'",
-            HTML("Enter Ensemble Transcript Identifiers separated by ', ':<br/><textarea id='custom' rows=10 cols=40>ENSMUST00000023116, ENSMUST00000037324, ENSMUST00000001455, ENSMUST00000109986, ENSMUST00000151266, ENSMUST00000112498, ENSMUST00000152710, ENSMUST00000169282, ENSMUST00000069949, ENSMUST00000102743</textarea><br/>"))
+            HTML("Enter Ensemble Transcript Identifiers separated by ', ':<br/><textarea id='custom' rows=10 cols=40>ENSMUST00000023116, ENSMUST00000037324, ENSMUST00000001455, ENSMUST00000109986, ENSMUST00000151266, ENSMUST00000112498, ENSMUST00000152710, ENSMUST00000169282, ENSMUST00000069949, ENSMUST00000102743</textarea><br/>")),
+        actionButton("redraw","Apply changes and update graph")
     ),
     mainPanel(
         tabsetPanel(

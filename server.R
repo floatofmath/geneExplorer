@@ -19,6 +19,7 @@ shinyServer(function(input,output){
         heatmap(isolate(fitted()),input$comparison,input$sort,input$toptags,strsplit(input$custom,',[[:blank:]]*')[[1]])
     })
     output$table <- renderDataTable({
+        input$redraw
         tt <- TEtable(isolate(fitted()),input$comparison,input$sort,Inf,strsplit(input$custom,',[[:blank:]]*')[[1]])
         ##locus <- tt[,paste0(Chromosome,":",start,"-",end)]
         tt[,locus]

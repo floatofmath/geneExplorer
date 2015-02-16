@@ -20,7 +20,8 @@ TEtopTags.limma <- function(comparison,fit,n,pattern){
         TEtopTags.limma.contrast(fit,n,pattern)
     }
 }
-TEtopTags <- function(method,comparison,fit,n,pattern=NULL){
+TEtopTags <- function(comparison,fit,n,pattern=NULL){
+    method <- c("DGELRT"="edgeR","MArrayLM"="limma")[class(fit)]
     switch(method,
            "limma"=TEtopTags.limma,
            "edgeR"=TEtopTags.edgeR)(comparison,fit,n,pattern)
@@ -52,9 +53,10 @@ TEtopStats.limma <- function(comparison,fit,toptags){
     }
 }
 
-TEtopStats <- function(method,comparison,fit,toptags){
+TEtopStats <- function(comparison,fit,toptags){
+    method <- c("DGELRT"="edgeR","MArrayLM"="limma")[class(fit)]
     if(is.numeric(toptags) && length(toptags) == 1){
-        toptags <- TEtopTags(method,comparison,fit,toptags)
+        toptags <- TEtopTags(comparison,fit,toptags)
     }
     switch(method,
            "limma"=TEtopStats.limma,
@@ -84,10 +86,10 @@ heatmap <- function(fit,comparison,sort,n=NULL,tags=NULL){
     if(sort == "custom"){
         idx <- tags
     } else {
-        idx <- TEtopTags(method,comparison,fit,n)
+        idx <- TEtopTags(comparison,fit,n)
     }
     mat <- topCounts(idx,method)
-    stat <- TEtopStats(method,comparison,fit,idx)
+    stat <- TEtopStats(comparison,fit,idx)
     gn <- annotation[idx,][["Gene Name"]]
     gn[is.na(gn)] <- idx[is.na(gn)]
     heatslide(mat,stat,as.factor(design$Group),genenames=gn,slidetitle=caption)
@@ -115,7 +117,7 @@ TEtopTable <- function(fit,tags){
            
 
 
-TEtable <- function(fit,comparison,sort,n=NULL,tags=NULL){
+TEtable <- function(fit,comparison,sort,n,tags=NULL){
     method <- c("DGELRT"="edgeR","MArrayLM"="limma")[class(fit)]
     statistic <- ifelse(comparison=="global",
                       c("edgeR"="LR-Statistic","limma"="F-Statistic")[method],
@@ -123,12 +125,14 @@ TEtable <- function(fit,comparison,sort,n=NULL,tags=NULL){
     if(sort == "custom"){
         idx <- tags
     } else {
-        idx <- TEtopTags(method,comparison,fit,n)
+        idx <- TEtopTags(comparison,fit,n)
     }
     counts <- as.data.table(topCounts(idx,method),keep.rownames=TRUE)
     stat <- TEtopTable(fit,idx)
     setkey(stat,nearest_ref_id)
     tab <- stat[counts,]
+    tab[,Rank:=1:nrow(tab)]
+    setcolorder(tab,c(ncol(tab),1:(ncol(tab)-1)))
     tab
 }
 
@@ -139,7 +143,7 @@ TEparcor <- function(fit,comparison,gsort,lsort,ngenes=NULL,nloci=NULL,genes=NUL
         nloci <- length(grep("locus",rownames(fit),perl=T))
         lsort <- "top"
     }
-    loci <- TEtopTags(method,comparison,fit,nloci,pattern="locus")
+    loci <- TEtopTags(comparison,fit,nloci,pattern="locus")
     if(gsort == "all"){
         ngenes <- length(grep("^NM",rownames(fit),perl=T))
         gsort <- "top"
@@ -147,7 +151,7 @@ TEparcor <- function(fit,comparison,gsort,lsort,ngenes=NULL,nloci=NULL,genes=NUL
     if(gsort == "custom") {
         genes <- genes
     } else {
-        genes <- TEtopTags(method,comparison,fit,ngenes,pattern="^NM")
+        genes <- TEtopTags(comparison,fit,ngenes,pattern="^NM")
     }
     gres <- resids[genes,]
     lres <- resids[loci,]

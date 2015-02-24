@@ -21,7 +21,7 @@ shinyUI(fluidPage(
                         min=24,max=96,step=24,value=48)),
         conditionalPanel(
             condition="input.sort == 'custom' || input.gsort == 'custom'",
-            HTML("Enter NM Identifiers separated by ', ':<br/><textarea id='custom' rows=10 cols=40>NM_026377, NM_001003719, NM_026454, locus.2725.3, NM_001040072, NM_007953, locus.1073.29, NM_146224, locus.5293.7, locus.1785.79, NM_001281829, NM_172310, locus.3971.1, NM_023363, locus.317.243, locus.6277.8, locus.10411.34, NM_001271500, locus.3938.3, NM_001167905</textarea><br/>"))
+            HTML("Enter NM Identifiers separated by ', ':<br/><textarea id='custom' rows=10 cols=40>NM_001001144, NM_001001176, NM_001001179, NM_001001181, NM_001001182, NM_001001183, NM_001001184, NM_001001185, NM_001001187, NM_001001295</textarea><br/>"))
     ),
     mainPanel(
         tabsetPanel(

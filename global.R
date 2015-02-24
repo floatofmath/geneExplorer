@@ -20,6 +20,7 @@ em <- eBayes(m)#,trend=T)
 resids <- residuals(em,dge.voom)
 annotation <- annotation[!duplicated(NAMES),]
 
+
 contrasts <- function(contrast){
     comparison <- as.character(contrast)
     contrast <- c("global"=0,"24" = 1,"32"=2,"48" = 3,"72" = 4,"96" = 5)[comparison]

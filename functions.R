@@ -56,7 +56,10 @@ TEtopStats.limma <- function(comparison,fit,toptags){
 TEtopStats <- function(comparison,fit,toptags){
     method <- c("DGELRT"="edgeR","MArrayLM"="limma")[class(fit)]
     if(is.numeric(toptags) && length(toptags) == 1){
-        toptags <- TEtopTags(comparison,fit,toptags)
+        toptags <- TEtopTags(method,comparison,fit,toptags)
+    } else if(!all(intags <- toptags %in% rownames(fit))){
+        toptags <- toptags[intags]
+        warning(paste("Not all tags in data:",toptags[!intags],collapse=", "))
     }
     switch(method,
            "limma"=TEtopStats.limma,
@@ -92,13 +95,13 @@ heatmap <- function(fit,comparison,sort,n=NULL,tags=NULL){
     stat <- TEtopStats(comparison,fit,idx)
     gn <- annotation[idx,][["Gene Name"]]
     gn[is.na(gn)] <- idx[is.na(gn)]
-    heatslide(mat,stat,as.factor(design$Group),genenames=gn,slidetitle=caption)
+    heatslide(mat[,-(1:3)],stat,as.factor(targets$Group[-(1:3)]),genenames=gn,slidetitle=caption)
 }
 
 
 TEtopTable.edgeR <- function(fit,tags){
     fit <- fit[tags,]
-    myTopTags(fit,Inf,annotation)
+    myTopTags(fit,Inf,annotation,'NAMES')
 }
 
 TEtopTable.limma <- function(fit,tags){
@@ -129,7 +132,7 @@ TEtable <- function(fit,comparison,sort,n,tags=NULL){
     }
     counts <- as.data.table(topCounts(idx,method),keep.rownames=TRUE)
     stat <- TEtopTable(fit,idx)
-    setkey(stat,nearest_ref_id)
+    setkey(stat,NAMES)
     tab <- stat[counts,]
     tab[,Rank:=1:nrow(tab)]
     setcolorder(tab,c(ncol(tab),1:(ncol(tab)-1)))
@@ -149,9 +152,11 @@ TEparcor <- function(fit,comparison,gsort,lsort,ngenes=NULL,nloci=NULL,genes=NUL
         gsort <- "top"
     }
     if(gsort == "custom") {
-        genes <- genes
+        ingenes <- genes %in% rownames(fit)
+        genes <- genes[ingenes]
+        warning(paste("Not all tags in data:",genes[!ingenes],collapse=", "))
     } else {
-        genes <- TEtopTags(comparison,fit,ngenes,pattern="^NM")
+        genes <- TEtopTags(method,comparison,fit,ngenes,pattern="^NM")
     }
     gres <- resids[genes,]
     lres <- resids[loci,]

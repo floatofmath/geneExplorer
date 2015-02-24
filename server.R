@@ -18,17 +18,9 @@ shinyServer(function(input,output){
         heatmap(isolate(fitted()),input$comparison,input$sort,input$toptags,customTags())
     })
     output$table <- renderDataTable({
-<<<<<<< HEAD
         tt <- TEtable(isolate(fitted()),input$comparison,input$sort,Inf,customTags())
         locus <- tt[,paste0(Chromosome,":",start,"-",end)]
         tt[,NAMES:=makeUCSClink(locus,link=NAMES,project="&hgsid=202053665_L5FcliC2ZMly7BZLX6qdayCblg1D")]
-=======
-        input$redraw
-        tt <- TEtable(isolate(fitted()),input$comparison,input$sort,Inf,strsplit(input$custom,',[[:blank:]]*')[[1]])
-        ##locus <- tt[,paste0(Chromosome,":",start,"-",end)]
-        tt[,locus]
-        tt[,nearest_ref_id:=makeUCSClink(locus,link=nearest_ref_id,project="&hgsid=202468101_ujaJjbSojoAWpGMMqKBM51YXk2QY")]
->>>>>>> 650514b... added ranks to toptable, simplified a few calls by autodetecting method
         tt
     },escape=FALSE)
     output$downloadTable <- downloadHandler(
